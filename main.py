@@ -2,7 +2,7 @@ import tkinter as Tk
 from assets import Assets
 from PIL import ImageTk, Image
 from button import Button as Btn
-from output_canvas import Outputter
+from output_canvas import Outputter, SerialOutputter
 from calc import Calculator, CalculatorMachine
 import itertools
 
@@ -14,7 +14,10 @@ tk.geometry("400x600")
 assets = Assets()
 
 outputter = Outputter(tk, 30, 20, assets.output_bg, 20, assets)
-machine = CalculatorMachine(outputter.update_text)
+serial_outputter = SerialOutputter("COM3", dry_run=True)
+machine = CalculatorMachine(
+    lambda *args: (outputter.update_text(*args), serial_outputter.update_text(*args))
+)
 
 button_configuration = [
     ["A", "(", ")", "+"],
@@ -46,7 +49,7 @@ kbd_map = {
 }
 for c in itertools.chain(*button_configuration):
     tk.bind(kbd_map.get(c, c), lambda e, c=c: machine.input(c))
-tk.bind("<Return>", lambda e: machine.input('='))
+tk.bind("<Return>", lambda e: machine.input("="))
 btns = [
     [
         Btn(
