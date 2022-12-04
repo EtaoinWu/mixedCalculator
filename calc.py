@@ -10,8 +10,8 @@ class Calculator:
             s = s[:-1]
         if s == "-0":
             s = "0"
-        if len(s) > 8:
-            s = s[:8]
+        if len(s) > 16:
+            s = s[:16]
         return s
 
     def __call__(self, s):
