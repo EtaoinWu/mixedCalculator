@@ -73,3 +73,27 @@ class SerialOutputter:
         if not self.dry_run:
             self.ser.write((result + '\n').encode('utf-8'))
         print("Sent: ", result)
+
+
+class SerialOutputter1602:
+    def __init__(self, port, baudrate=115200, dry_run=False):
+        self.port = port
+        self.baudrate = baudrate
+        self.dry_run = dry_run
+        if not dry_run:
+            self.ser = serial.Serial(port, baudrate)
+
+    def str_len_limit(self, s, fill=False):
+        if len(s) > 16:
+            return "__" + s[-14:]
+        if fill and len(s) < 16:
+            s = " " * (16 - len(s)) + s
+        return s
+    
+    def update_text(self, proc, result):
+        proc = self.str_len_limit(proc)
+        result = self.str_len_limit(result, fill=True)
+        result = f'[{result}]\u007b{proc}\u007d'
+        if not self.dry_run:
+            self.ser.write((result + '\n').encode('utf-8'))
+        print("Sent: ", result)
